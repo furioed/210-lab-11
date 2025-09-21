@@ -6,7 +6,7 @@
 using namespace std;
 
 // constants
-const int MAX_PATIENTS = 100; // max allowed patients
+const int MAX_PATIENTS = 100;
 
 // A struct to represent a hospital patient
 // Each patient has a name, age, a dynamic list of medications, and a count of medications
@@ -15,10 +15,12 @@ struct Patient {
     int age;
     string* medications;
     int numMeds;
-}
+};
 
 // Function prototypes
 void inputPatients(Patient* patients, int size);
+void displayPatients(const Patient* patients, int size);
+void cleanup(Patient* patients, int size);
 
 // inputPatients() prompts user to enter patient info including medications
 // arguments: pointer to array of Patient structs, size of the array
@@ -27,11 +29,10 @@ void inputPatients(Patient* patients, int size) {
     for (int i = 0; i < size; i++) {
         cout << "\n--- Enter info for Patient #" << (i + 1) << " ---\n";
 
-        cin.ignore(); // clear leftover newline
+        cin.ignore();
         cout << "Name: ";
         getline(cin, patients[i].name);
 
-        // Validate age input
         cout << "Age: ";
         while (!(cin >> patients[i].age) || patients[i].age <= 0) {
             cout << "Invalid age. Please enter a positive number: ";
@@ -39,7 +40,6 @@ void inputPatients(Patient* patients, int size) {
             cin.ignore(1000, '\n');
         }
 
-        // Validate number of medications input
         cout << "How many medications is " << patients[i].name << " taking? ";
         while (!(cin >> patients[i].numMeds) || patients[i].numMeds < 0) {
             cout << "Invalid number. Please enter 0 or a positive number: ";
@@ -47,10 +47,9 @@ void inputPatients(Patient* patients, int size) {
             cin.ignore(1000, '\n');
         }
 
-        // Allocate medication array if needed
         if (patients[i].numMeds > 0) {
             patients[i].medications = new string[patients[i].numMeds];
-            cin.ignore(); // clear newline before getline loop
+            cin.ignore();
             for (int j = 0; j < patients[i].numMeds; j++) {
                 cout << "Enter medication #" << (j + 1) << ": ";
                 getline(cin, patients[i].medications[j]);
@@ -58,6 +57,37 @@ void inputPatients(Patient* patients, int size) {
         } else {
             patients[i].medications = nullptr;
         }
+    }
+}
+
+// displayPatients() prints all patient info to console
+// arguments: pointer to array of Patient structs, size of the array
+// returns: nothing
+void displayPatients(const Patient* patients, int size) {
+    cout << "\n===== HOSPITAL PATIENT RECORDS =====\n";
+    for (int i = 0; i < size; i++) {
+        cout << "\nPatient #" << (i + 1) << "\n";
+        cout << "Name: " << patients[i].name << "\n";
+        cout << "Age: " << patients[i].age << "\n";
+        cout << "Medications: ";
+        if (patients[i].numMeds == 0) {
+            cout << "None";
+        } else {
+            for (int j = 0; j < patients[i].numMeds; j++) {
+                cout << patients[i].medications[j];
+                if (j < patients[i].numMeds - 1) cout << ", ";
+            }
+        }
+        cout << "\n";
+    }
+}
+
+// cleanup() frees all dynamically allocated memory
+// arguments: pointer to array of Patient structs, size of the array
+// returns: nothing
+void cleanup(Patient* patients, int size) {
+    for (int i = 0; i < size; i++) {
+        delete[] patients[i].medications;
     }
 }
 
@@ -71,16 +101,17 @@ int main() {
         cin.ignore(1000, '\n');
     }
 
-    // Create a dynamic array of Patient structs
+    // create dynamic array of patients
     Patient* patients = new Patient[numPatients];
 
-    // Input patient data
+    // input phase
     inputPatients(patients, numPatients);
 
-    // Free dynamic memory
-    for (int i = 0; i < numPatients; i++) {
-        delete[] patients[i].medications;
-    }
+    // display phase
+    displayPatients(patients, numPatients);
+
+    // cleanup phase
+    cleanup(patients, numPatients);
     delete[] patients;
 
     return 0;
