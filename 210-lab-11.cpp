@@ -15,7 +15,7 @@ struct Patient {
     int age;
     string* medications;
     int numMeds;
-};
+}; // semicolon is required at the end
 
 // Function prototypes
 void inputPatients(Patient* patients, int size);
@@ -29,10 +29,11 @@ void inputPatients(Patient* patients, int size) {
     for (int i = 0; i < size; i++) {
         cout << "\n--- Enter info for Patient #" << (i + 1) << " ---\n";
 
-        cin.ignore();
+        // Prompt for patient name
         cout << "Name: ";
-        getline(cin, patients[i].name);
+        getline(cin, patients[i].name); // read full line for name
 
+        // Prompt for patient age and validate input
         cout << "Age: ";
         while (!(cin >> patients[i].age) || patients[i].age <= 0) {
             cout << "Invalid age. Please enter a positive number: ";
@@ -40,6 +41,9 @@ void inputPatients(Patient* patients, int size) {
             cin.ignore(1000, '\n');
         }
 
+        cin.ignore(1000, '\n'); // clear newline before next getline
+
+        // Prompt for number of medications and validate input
         cout << "How many medications is " << patients[i].name << " taking? ";
         while (!(cin >> patients[i].numMeds) || patients[i].numMeds < 0) {
             cout << "Invalid number. Please enter 0 or a positive number: ";
@@ -47,15 +51,17 @@ void inputPatients(Patient* patients, int size) {
             cin.ignore(1000, '\n');
         }
 
+        cin.ignore(1000, '\n'); // clear newline before reading medications
+
+        // Allocate medication array if needed
         if (patients[i].numMeds > 0) {
-            patients[i].medications = new string[patients[i].numMeds];
-            cin.ignore();
+            patients[i].medications = new string[patients[i].numMeds]; // dynamic allocation
             for (int j = 0; j < patients[i].numMeds; j++) {
                 cout << "Enter medication #" << (j + 1) << ": ";
-                getline(cin, patients[i].medications[j]);
+                getline(cin, patients[i].medications[j]); // read medication name
             }
         } else {
-            patients[i].medications = nullptr;
+            patients[i].medications = nullptr; // no medications
         }
     }
 }
@@ -94,12 +100,15 @@ void cleanup(Patient* patients, int size) {
 int main() {
     int numPatients;
 
+    // Prompt user for number of patients and validate input
     cout << "Enter the number of patients to record (max " << MAX_PATIENTS << "): ";
     while (!(cin >> numPatients) || numPatients <= 0 || numPatients > MAX_PATIENTS) {
         cout << "Invalid number. Please enter a number between 1 and " << MAX_PATIENTS << ": ";
         cin.clear();
         cin.ignore(1000, '\n');
     }
+
+    cin.ignore(1000, '\n'); // clear leftover newline after reading number of patients
 
     // create dynamic array of patients
     Patient* patients = new Patient[numPatients];
